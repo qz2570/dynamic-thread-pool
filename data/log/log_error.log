@@ -1100,3 +1100,20 @@ Caused by: java.net.ConnectException: Connection refused: no further information
 	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.lang.Thread.run(Thread.java:750)
+24-09-12.17:32:14.318 [main            ] WARN  AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dynamicThreadRedissonClient' defined in class path resource [org/qzproject/dynamic/thread/pool/sdk/config/DynamicThreadPoolAutoConfig.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.redisson.api.RedissonClient]: Factory method 'redissonClient' threw exception; nested exception is org.redisson.client.RedisConnectionException: io.netty.resolver.dns.DnsResolveContext$SearchDomainUnknownHostException: Failed to resolve 'null' [A(1)] and search domain query for configured domains failed as well: [mynetworksettings.com]
+24-09-12.17:33:52.510 [main            ] WARN  AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'threadPoolDataReportJob' defined in class path resource [org/qzproject/dynamic/thread/pool/sdk/config/DynamicThreadPoolAutoConfig.class]: Unsatisfied dependency expressed through method 'threadPoolDataReportJob' parameter 1; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.qzproject.dynamic.thread.pool.sdk.registry.IRegistryService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+24-09-12.17:33:52.552 [main            ] ERROR LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 1 of method threadPoolDataReportJob in org.qzproject.dynamic.thread.pool.sdk.config.DynamicThreadPoolAutoConfig required a bean of type 'org.qzproject.dynamic.thread.pool.sdk.registry.IRegistryService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'org.qzproject.dynamic.thread.pool.sdk.registry.IRegistryService' in your configuration.
+
