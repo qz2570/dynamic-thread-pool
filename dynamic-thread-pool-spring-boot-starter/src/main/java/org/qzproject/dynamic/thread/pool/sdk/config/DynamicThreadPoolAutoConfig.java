@@ -9,7 +9,6 @@ import org.qzproject.dynamic.thread.pool.sdk.domain.model.valobj.RegistryEnumVO;
 import org.qzproject.dynamic.thread.pool.sdk.registry.IRegistryService;
 import org.qzproject.dynamic.thread.pool.sdk.registry.redis.RedisRegistryService;
 import org.qzproject.dynamic.thread.pool.sdk.trigger.job.ThreadPoolDataReportJob;
-import org.qzproject.dynamic.thread.pool.sdk.trigger.job.ThreadPoolUpdateJob;
 import org.qzproject.dynamic.thread.pool.sdk.trigger.listener.ThreadPoolConfigAdjustListener;
 import org.redisson.Redisson;
 import org.redisson.api.RTopic;
@@ -38,27 +37,6 @@ public class DynamicThreadPoolAutoConfig {
 
     private final Logger logger = LoggerFactory.getLogger(DynamicThreadPoolAutoConfig.class);
     private String applicationName;
-    @Bean("dynamicThreadPoolService")
-    public DynamicThreadPoolService dynamicThreadPoolService(ApplicationContext applicationContext, Map<String, ThreadPoolExecutor> threadPoolExecutorMap) {
-        applicationName = applicationContext.getEnvironment().getProperty("spring.application.name");
-
-        if (StringUtils.isBlank(applicationName)) {
-            applicationName = "empty name";
-            logger.warn("Dynamic thread pool start warning: SpringBoot spring.application.name is not config");
-        }
-
-        Set<String> threadPoolKeys = threadPoolExecutorMap.keySet();
-        /**
-        for (String threadPoolKey : threadPoolKeys) {
-            ThreadPoolConfigEntity threadPoolConfigEntity = redissonClient.<ThreadPoolConfigEntity>getBucket(RegistryEnumVO.THREAD_POOL_CONFIG_PARAMETER_LIST_KEY.getKey() + "_" + applicationName + "_" + threadPoolKey).get();
-            if (null == threadPoolConfigEntity) continue;
-            ThreadPoolExecutor threadPoolExecutor = threadPoolExecutorMap.get(threadPoolKey);
-            threadPoolExecutor.setCorePoolSize(threadPoolConfigEntity.getCorePoolSize());
-            threadPoolExecutor.setMaximumPoolSize(threadPoolConfigEntity.getMaximumPoolSize());
-        }**/
-
-        return new DynamicThreadPoolService(applicationName, threadPoolExecutorMap);
-    }
 
     @Bean("dynamicThreadRedissonClient")
     public RedissonClient redissonClient(DynamicThreadPoolAutoConfigProperties properties) {
@@ -79,6 +57,28 @@ public class DynamicThreadPoolAutoConfig {
         RedissonClient redissonClient = Redisson.create(config);
         logger.info("Dynamic thread pool redis registry initialized {} {} {}", properties.getHost(), properties.getPoolSize(), !redissonClient.isShutdown());
         return redissonClient;
+    }
+
+    @Bean("dynamicThreadPoolService")
+    public DynamicThreadPoolService dynamicThreadPoolService(ApplicationContext applicationContext, Map<String, ThreadPoolExecutor> threadPoolExecutorMap, RedissonClient redissonClient) {
+        applicationName = applicationContext.getEnvironment().getProperty("spring.application.name");
+
+        if (StringUtils.isBlank(applicationName)) {
+            applicationName = "empty name";
+            logger.warn("Dynamic thread pool start warning: SpringBoot spring.application.name is not config");
+        }
+
+        Set<String> threadPoolKeys = threadPoolExecutorMap.keySet();
+
+        for (String threadPoolKey : threadPoolKeys) {
+            ThreadPoolConfigEntity threadPoolConfigEntity = redissonClient.<ThreadPoolConfigEntity>getBucket(RegistryEnumVO.THREAD_POOL_CONFIG_PARAMETER_LIST_KEY.getKey() + "_" + applicationName + "_" + threadPoolKey).get();
+            if (null == threadPoolConfigEntity) continue;
+            ThreadPoolExecutor threadPoolExecutor = threadPoolExecutorMap.get(threadPoolKey);
+            threadPoolExecutor.setCorePoolSize(threadPoolConfigEntity.getCorePoolSize());
+            threadPoolExecutor.setMaximumPoolSize(threadPoolConfigEntity.getMaximumPoolSize());
+        }
+
+        return new DynamicThreadPoolService(applicationName, threadPoolExecutorMap);
     }
 
     @Bean
