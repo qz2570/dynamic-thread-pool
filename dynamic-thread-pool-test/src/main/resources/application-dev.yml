@@ -17,12 +17,20 @@ thread:
 dynamic:
   thread:
     pool:
-      config:
-        enabled: true
-        # redis host
-        host: 127.0.0.1
-        # redis port
-        port: 16379
+      redis:
+        config:
+          enabled: true
+          # redis host
+          host: 127.0.0.1
+          # redis port
+          port: 16379
+      zookeeper:
+        config:
+          connect-string: 127.0.0.1:2181
+          base-sleep-time-ms: 1000
+          max-retries: 3
+          session-timeout-ms: 1800000
+          connection-timeout-ms: 30000
 
 
 logging:

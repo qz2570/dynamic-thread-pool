@@ -20,24 +20,13 @@ public class ThreadPoolDataReportJob {
 
     private final IRegistryService registry;
 
-    private RTopic rTopic;
-
-    public ThreadPoolDataReportJob(IDynamicThreadPoolService dynamicThreadPoolService, IRegistryService registry,RTopic rTopic) {
+    public ThreadPoolDataReportJob(IDynamicThreadPoolService dynamicThreadPoolService, IRegistryService registry) {
         this.dynamicThreadPoolService = dynamicThreadPoolService;
         this.registry = registry;
-        this.rTopic=rTopic;
     }
 
-    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void execReportThreadPoolList() {
-        logger.info("Dynamic thread pool, insert new thread pool publish update info");
-        Random random = new Random();
-        ThreadPoolConfigEntity updatedThreadPoolConfigEntity = new ThreadPoolConfigEntity("dynamic-thread-pool-test-app", "threadPoolExecutor01");
-        updatedThreadPoolConfigEntity.setCorePoolSize(20);
-        updatedThreadPoolConfigEntity.setPoolSize(random.nextInt(451) + 50);
-        updatedThreadPoolConfigEntity.setMaximumPoolSize(random.nextInt(451) + 50);
-        rTopic.publish(updatedThreadPoolConfigEntity);
-
 
         List<ThreadPoolConfigEntity> threadPoolConfigEntities = dynamicThreadPoolService.queryThreadPoolList();
         registry.reportThreadPool(threadPoolConfigEntities);
@@ -47,8 +36,6 @@ public class ThreadPoolDataReportJob {
             registry.reportThreadPoolConfigParameter(threadPoolConfigEntity);
             logger.info("dynamic thread pool, insert thread pool parameters：{}", JSON.toJSONString(threadPoolConfigEntity));
         }
-
     }
-
 }
 

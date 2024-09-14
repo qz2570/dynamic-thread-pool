@@ -2,8 +2,8 @@ package org.qzproject.dynamic.thread.pool.sdk.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "dynamic.thread.pool.config", ignoreInvalidFields = true)
-public class DynamicThreadPoolAutoConfigProperties {
+@ConfigurationProperties(prefix = "dynamic.thread.pool.redis.config", ignoreInvalidFields = true)
+public class DynamicThreadPoolRedisProperties {
 
     private boolean enable;
 

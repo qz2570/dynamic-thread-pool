@@ -10,15 +10,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class ThreadPoolConfigAdjustListener implements MessageListener<ThreadPoolConfigEntity> {
+public class ThreadPoolConfigAdjustReidsListener implements MessageListener<ThreadPoolConfigEntity> {
 
-    private Logger logger = LoggerFactory.getLogger(ThreadPoolConfigAdjustListener.class);
+    private Logger logger = LoggerFactory.getLogger(ThreadPoolConfigAdjustReidsListener.class);
 
     private final IDynamicThreadPoolService dynamicThreadPoolService;
 
     private final IRegistryService registry;
 
-    public ThreadPoolConfigAdjustListener(IDynamicThreadPoolService dynamicThreadPoolService, IRegistryService registry) {
+    public ThreadPoolConfigAdjustReidsListener(IDynamicThreadPoolService dynamicThreadPoolService, IRegistryService registry) {
         this.dynamicThreadPoolService = dynamicThreadPoolService;
         this.registry = registry;
     }
