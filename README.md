@@ -12,4 +12,4 @@ Even if we quickly detect a rejection occurs, it is often difficult to get the t
 ## Hard to address parameters issues: 
 Once we identify that a thread pool's parameter configuration is unreasonable, we need to make adjustments accordingly. However, the time taken for the `modify -> package -> approval -> release` process can potentially increase the severity of the incident. Additionally, due to the difficulty in setting reasonable thread pool parameters, we may have to repeatedly go through the `modify -> package -> approval -> release' cycle.`.
 # Solution
-Report thread pool parameters to the registry, enable dynamically monitor and modify of thread pool parameters through the registry. In this project, Redis and ZooKeeper (recommended) are supported as the registry.
+Report thread pool configuration to the registry, enable dynamically monitor and modify of thread pool parameters through the registry. In this project, Redis and ZooKeeper (recommended) are supported as the registry.
