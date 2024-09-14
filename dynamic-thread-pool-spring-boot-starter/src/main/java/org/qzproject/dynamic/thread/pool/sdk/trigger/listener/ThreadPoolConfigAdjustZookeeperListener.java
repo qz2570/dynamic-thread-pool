@@ -16,8 +16,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.prefs.NodeChangeListener;
 
@@ -31,37 +33,40 @@ public class ThreadPoolConfigAdjustZookeeperListener {
 
     private final CuratorFramework zookeeperClient;
 
-    private final NodeCache nodeCache;
+    private Map<String,NodeCache> nodeCacheMap;
 
-    private final String applicationName;
-
-    public ThreadPoolConfigAdjustZookeeperListener(IDynamicThreadPoolService dynamicThreadPoolService, IRegistryService registry, CuratorFramework zookeeperClient, ApplicationContext applicationContext) {
+    public ThreadPoolConfigAdjustZookeeperListener(IDynamicThreadPoolService dynamicThreadPoolService, IRegistryService registry, CuratorFramework zookeeperClient) {
         this.dynamicThreadPoolService = dynamicThreadPoolService;
         this.registry = registry;
         this.zookeeperClient = zookeeperClient;
-        this.applicationName = applicationContext.getEnvironment().getProperty("spring.application.name");
-        this.nodeCache = new NodeCache(zookeeperClient, "/" + RegistryEnumVO.THREAD_POOL_CONFIG_LIST_KEY + "/" + applicationName);
-        nodeCache.getListenable().addListener(new NodeCacheListener() {
-            @Override
-            public void nodeChanged() throws Exception {
-                final byte[] data = nodeCache.getCurrentData().getData();
-                String changedData = new String(data, StandardCharsets.UTF_8);
-                handleChangedData(changedData);
+        this.nodeCacheMap=new HashMap<>();
+        List<ThreadPoolConfigEntity> threadPoolConfigEntities=dynamicThreadPoolService.queryThreadPoolList();
+        for (ThreadPoolConfigEntity threadPoolConfigEntity: threadPoolConfigEntities) {
+            String zookeeperPath = "/" + RegistryEnumVO.THREAD_POOL_CONFIG_PARAMETER_LIST_KEY + "/" + threadPoolConfigEntity.getAppName() + "/" + threadPoolConfigEntity.getThreadPoolName();
+            NodeCache nodeCache = new NodeCache(zookeeperClient, zookeeperPath);
+            nodeCache.getListenable().addListener(new NodeCacheListener() {
+                @Override
+                public void nodeChanged() throws Exception {
+                    final byte[] data = nodeCache.getCurrentData().getData();
+                    String changedData = new String(data, StandardCharsets.UTF_8);
+                    handleChangedData(changedData);
+                }
+            });
+            try {
+                nodeCache.start();
+                logger.info("start zookeeper listener");
+            } catch (Exception e) {
+                logger.error("error when set zookeeper listener");
             }
-        });
-        try {
-            this.nodeCache.start();
-            logger.info("start zookeeper listener");
-        } catch (Exception e) {
-            logger.error("error when set zookeeper listener");
+            this.nodeCacheMap.put(threadPoolConfigEntity.getThreadPoolName(),nodeCache);
         }
     }
 
     public void handleChangedData(String changedData) {
-        // 在这里处理接收到的消息
-        List<ThreadPoolConfigEntity> threadPoolConfigEntities= JSON.parseArray(changedData,ThreadPoolConfigEntity.class);
-        logger.info("get message");
-        System.out.println("处理消息: " + changedData);
+        ThreadPoolConfigEntity threadPoolConfigEntity= JSON.parseObject(changedData,ThreadPoolConfigEntity.class);
+        logger.info("get new thread pool config by zookeeper");
+        dynamicThreadPoolService.updateThreadPoolConfig(threadPoolConfigEntity);
+        logger.info("update new thread pool config by zookeeper done");
     }
 
 }

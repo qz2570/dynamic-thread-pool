@@ -131,8 +131,8 @@ public class DynamicThreadPoolAutoConfig {
         return new ThreadPoolDataReportJob(dynamicThreadPoolService, registry);
     }
     @Bean
-    public ThreadPoolConfigAdjustZookeeperListener threadPoolConfigAdjustZookeeperListener(IDynamicThreadPoolService dynamicThreadPoolService, IRegistryService registryService, CuratorFramework zookeeperClient, ApplicationContext applicationContext)
+    public ThreadPoolConfigAdjustZookeeperListener threadPoolConfigAdjustZookeeperListener(IDynamicThreadPoolService dynamicThreadPoolService, IRegistryService registryService, CuratorFramework zookeeperClient)
     {
-        return new ThreadPoolConfigAdjustZookeeperListener(dynamicThreadPoolService,registryService,zookeeperClient,applicationContext);
+        return new ThreadPoolConfigAdjustZookeeperListener(dynamicThreadPoolService,registryService,zookeeperClient);
     }
 }
