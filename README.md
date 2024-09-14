@@ -4,7 +4,6 @@ This is a lightweight Spring Boot middleware that implements real-time monitorin
 Dynamic thread pool allows real-time change of thread pool parameters without redeploying your application. It allows developers adjust and validate the parameters' reasonableness quickly based on its dynamic change capabilities.
 # Why dynamic thread pool?
 While thread pools bring performance and throughput improvements to our application, they also come with many risks and issues. The primary reason is that it is difficult to configure reasonable thread pool parameters. 
-
 The difficulty in configuring thread pool parameters reasonably forces us to focus on the following three pain points:
 ## Hard to monitor the thread pool state: 
 Developers usually find it hard to know how many threads have been created in each thread pool, whether there are backlogged tasks in the queue, what's the currently state of thread pool, or whether the thread pool has been exhausted... These problems could often only be awared after issues arise in product or receiving customer complaints.
